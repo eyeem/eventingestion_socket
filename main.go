@@ -88,7 +88,10 @@ func main() {
         for {
             data, err := bufio.NewReader(fd).ReadString('\n')
             if err != nil {
-                fmt.Printf("BufReader error " + err.Error())
+                fmt.Printf(" BufReader error " + err.Error())
+                if err.Error() == "EOF" {
+                    break
+                }
             }
             go sendToKinesis(string(data))
         }
