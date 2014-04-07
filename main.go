@@ -8,6 +8,7 @@ import (
     "syscall"
     "bufio"
     "errors"
+    "strconv"
     kinesis "github.com/sendgridlabs/go-kinesis"
 )
 
@@ -56,6 +57,18 @@ func main() {
         return
     } else {
         println("Listening on " + socket)
+        permission, err := getConfiguration("SOCKET_MODE")
+        if err != nil {
+            fmt.Printf(err.Error() + "\nSOCKET_MODE is ot set in your environment variables, will leave it readable for $USER\n")
+        } else {
+            perm, err := strconv.ParseUint(permission, 0, 32)
+            if err != nil {
+                fmt.Printf(err.Error() + "\nSOCKET_MODE is not readable, will leave it readable for $USER\n")
+            } else {
+                fmt.Printf("Changing socket permissions to " + permission + "\n")
+                os.Chmod(socket, os.FileMode(perm))
+            }
+        }
     }
     c := make(chan os.Signal, 1)
     signal.Notify(c, os.Interrupt)
