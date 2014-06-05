@@ -1,0 +1,14 @@
+Source: eventingestionsocket
+Section: utils
+Priority: extra
+Maintainer: Lars Fronius <lars@eyeem.com>
+Build-Depends: debhelper (>= 7.0.50~), go | golang
+Standards-Version: 3.9.1
+Homepage: http://github.com/LarsFronius/eventingestion_socket
+
+Package: eventingestionsocket
+Architecture: amd64 i386 armel
+Depends: ${misc:Depends}
+Description: Kinesis push
+  Starts background daemon to run eventingestion_socket
+  and provide a UNIX socket to communicate with.
