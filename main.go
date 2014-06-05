@@ -9,6 +9,7 @@ import (
     "bufio"
     "errors"
     "strconv"
+    "crypto/md5"
     kinesis "github.com/sendgridlabs/go-kinesis"
 )
 
@@ -21,7 +22,28 @@ func getConfiguration(variable string) (conf string, err error) {
     return conf, nil
 }
 
-func sendToKinesis(data string) {
+func sendToKinesis(data string, eventstream string, aws_access_key_id string, aws_secret_access_key string) {
+    ksis := kinesis.New(aws_access_key_id, aws_secret_access_key)
+    args := kinesis.NewArgs()
+    partitionkey := fmt.Sprintf("%x", md5.Sum([]byte(data)))
+    args.Add("StreamName", eventstream)
+    args.AddData([]byte(data))
+    args.Add("PartitionKey", partitionkey)
+    resp4, err := ksis.PutRecord(args)
+    if err != nil {
+        fmt.Printf("PutRecord err: %v\n", err)
+    } else {
+        fmt.Printf("PutRecord: %v\n", resp4)
+    }
+}
+
+func main() {
+    eventstream, err := getConfiguration("EVENT_STREAM")
+    if err != nil {
+        fmt.Print(err.Error() + "Configuration for EVENT_STREAM not set, will default to 'PrimaryEventStream'\n")
+        eventstream = "PrimaryEventStream"
+    }
+    println("Sending data to " + eventstream)
     aws_access_key_id, err := getConfiguration("AWS_ACCESS_KEY_ID")
     if err != nil {
         fmt.Printf(err.Error() + "Configuration for AWS_ACCESS_KEY_ID not set\n")
@@ -32,20 +54,6 @@ func sendToKinesis(data string) {
         fmt.Printf(err.Error() + "Configuration for AWS_SECRET_ACCESS_KEY not set\n")
         os.Exit(1)
     }
-    ksis := kinesis.New(aws_access_key_id, aws_secret_access_key)
-    args := kinesis.NewArgs()
-    args.Add("StreamName", "PrimaryEventStream")
-    args.AddData([]byte(data))
-    args.Add("PartitionKey", "123")
-    resp4, err := ksis.PutRecord(args)
-    if err != nil {
-        fmt.Printf("PutRecord err: %v\n", err)
-    } else {
-        fmt.Printf("PutRecord: %v\n", resp4)
-    }
-}
-
-func main() {
     socket, err := getConfiguration("SOCKET_PATH")
     if err != nil {
         fmt.Printf(err.Error() + "\nSocket not configured, will set to /tmp/eventingestion.sock\n")
@@ -59,11 +67,11 @@ func main() {
         println("Listening on " + socket)
         permission, err := getConfiguration("SOCKET_MODE")
         if err != nil {
-            fmt.Printf(err.Error() + "\nSOCKET_MODE is ot set in your environment variables, will leave it readable for $USER\n")
+            fmt.Printf(err.Error() + "SOCKET_MODE is not set in your environment variables, will leave it readable for $USER\n")
         } else {
             perm, err := strconv.ParseUint(permission, 0, 32)
             if err != nil {
-                fmt.Printf(err.Error() + "\nSOCKET_MODE is not readable, will leave it readable for $USER\n")
+                fmt.Printf(err.Error() + "SOCKET_MODE is not readable, will leave it readable for $USER\n")
             } else {
                 fmt.Printf("Changing socket permissions to " + permission + "\n")
                 os.Chmod(socket, os.FileMode(perm))
@@ -93,7 +101,7 @@ func main() {
                     break
                 }
             }
-            go sendToKinesis(string(data))
+            go sendToKinesis(string(data), eventstream, aws_access_key_id, aws_secret_access_key)
         }
 
     }
