@@ -1,34 +1,13 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
+#
+#  # Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+export DH_OPTIONS
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
-
-export GOPATH=$(CURDIR)
-
-PKGDIR=debian/eventingestion_socket
+export DH_GOPKG := github.com/eyeem/eventingestion_socket
 
 %:
-	dh $@ 
+		dh $@ --buildsystem=golang --with=golang
 
-clean:
-	dh_clean
-	rm -rf $(GOPATH)/bin/* $(GOPATH)/pkg/*
-	cd $(GOPATH) && go clean
-	rm -f $(GOPATH)/goinstall.log
-
-binary-arch: clean
-	dh_prep
-	dh_installdirs
-	cd $(GOPATH) && go get && go build
-	mkdir -p $(PKGDIR)/usr/bin
-	cp $(GOPATH)/eventingestion_socket $(PKGDIR)/usr/bin/
-	dh_strip
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary: binary-arch
+override_dh_auto_test:
