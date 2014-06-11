@@ -1,13 +1,18 @@
 #!/usr/bin/make -f
 # -*- makefile -*-
-#
-#  # Uncomment this to turn on verbose mode.
+
+# Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
 export DH_OPTIONS
-
 export DH_GOPKG := github.com/eyeem/eventingestion_socket
+export GOPATH=${CURDIR}/obj-${DEB_BUILD_GNU_TYPE}
 
 %:
-		dh $@ --buildsystem=golang --with=golang
+	dh $@ --buildsystem=golang --with=golang
 
 override_dh_auto_test:
+
+override_dh_auto_build:
+	cd obj-${DEB_BUILD_GNU_TYPE}
+	go get -v github.com/eyeem/eventingestion_socket/...
+	go install -v github.com/eyeem/eventingestion_socket/...
