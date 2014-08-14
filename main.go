@@ -31,9 +31,9 @@ func sendToKinesis(data string, eventstream string, aws_access_key_id string, aw
     args.Add("PartitionKey", partitionkey)
     resp4, err := ksis.PutRecord(args)
     if err != nil {
-        fmt.Printf("PutRecord err: %v\n", err)
+        fmt.Printf("PutRecord err: %v %v\n", resp4, err)
     } else {
-        fmt.Printf("PutRecord: %v\n", resp4)
+        //fmt.Printf("PutRecord: %v\n", resp4)
     }
 }
 
@@ -96,10 +96,11 @@ func main() {
         for {
             data, err := bufio.NewReader(fd).ReadString('\n')
             if err != nil {
-                fmt.Printf(" BufReader error " + err.Error())
                 if err.Error() == "EOF" {
                     break
-                }
+                } else {
+                    fmt.Printf(" BufReader error " + err.Error())
+                }	
             }
             go sendToKinesis(string(data), eventstream, aws_access_key_id, aws_secret_access_key)
         }
