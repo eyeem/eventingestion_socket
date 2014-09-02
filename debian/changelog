@@ -1,3 +1,9 @@
+eventingestionsocket (0.0.4) UNRELEASED; urgency=low
+
+  * Log only on errors.
+
+ -- Lars Fronius <lars@eyeem.com>  Thu, 14 Aug 2014 17:14:19 +0000
+
 eventingestionsocket (0.0.3) UNRELEASED; urgency=low
 
   * Initial release.

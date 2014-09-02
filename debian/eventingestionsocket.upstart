@@ -1,0 +1,21 @@
+# eventingestion_socket - Provides eventingesiton UNIX socket
+#
+# Starts background daemon to run eventingestion_socket
+# and provide a UNIX socket to communicate with.
+
+description "Provides eventingestion UNIX socket"
+
+start on runlevel [2345]
+stop on runlevel [!2345]
+
+respawn
+respawn limit 10 5
+
+console log
+
+script
+  [ -r /etc/default/eventingestion_socket ] && . /etc/default/eventingestion_socket
+  [ ! $GOMAXPROCS ] && export GOMAXPROCS=$(expr `nproc` / 4 + 1)
+  exec /usr/bin/eventingestion_socket
+end script
+
