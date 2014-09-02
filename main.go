@@ -22,8 +22,8 @@ func getConfiguration(variable string) (conf string, err error) {
     return conf, nil
 }
 
-func sendToKinesis(data string, eventstream string, aws_access_key_id string, aws_secret_access_key string) {
-    ksis := kinesis.New(aws_access_key_id, aws_secret_access_key)
+func sendToKinesis(data string, eventstream string, aws_access_key_id string, aws_secret_access_key string, aws_region kinesis.Region) {
+    ksis := kinesis.New(aws_access_key_id, aws_secret_access_key, aws_region)
     args := kinesis.NewArgs()
     partitionkey := fmt.Sprintf("%x", md5.Sum([]byte(data)))
     args.Add("StreamName", eventstream)
@@ -53,6 +53,13 @@ func main() {
     if err != nil {
         fmt.Printf(err.Error() + "Configuration for AWS_SECRET_ACCESS_KEY not set\n")
         os.Exit(1)
+    }
+    aws_region_string, err := getConfiguration("AWS_REGION")
+    aws_region := kinesis.Region{"us-east-1"}
+    if err != nil {
+        fmt.Printf(err.Error() + "No configuration set for AWS_REGION, will default to us-east-1\n")
+    } else {
+        aws_region = kinesis.Region{aws_region_string}
     }
     socket, err := getConfiguration("SOCKET_PATH")
     if err != nil {
@@ -100,9 +107,9 @@ func main() {
                     break
                 } else {
                     fmt.Printf(" BufReader error " + err.Error())
-                }	
+                }
             }
-            go sendToKinesis(string(data), eventstream, aws_access_key_id, aws_secret_access_key)
+            go sendToKinesis(string(data), eventstream, aws_access_key_id, aws_secret_access_key, aws_region)
         }
 
     }
