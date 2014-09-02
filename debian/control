@@ -7,8 +7,8 @@ Standards-Version: 3.9.1
 Homepage: http://github.com/LarsFronius/eventingestion_socket
 
 Package: eventingestionsocket
+Depends: sysv-rc (>= 2.88dsf-13.10ubuntu11) | file-rc (>= 0.8.16)
 Architecture: amd64 i386 armel
-Depends: ${misc:Depends}
 Description: Kinesis push
   Starts background daemon to run eventingestion_socket
   and provide a UNIX socket to communicate with.
