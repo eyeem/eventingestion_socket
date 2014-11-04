@@ -39,6 +39,8 @@ func readEventsAndSendToKinesis(events chan string, eventstream string, aws_acce
                     resp4, err := ksis.PutRecord(args)
                     if err != nil {
                         fmt.Printf("PutRecord for %v '%v' failed after retry, skipping.\n", resp4, event)
+                    } else {
+                        fmt.Printf("PutRecord for %v sent after retry\n", resp4)
                     }
                 }
             } else {
@@ -121,8 +123,8 @@ func main() {
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, syscall.SIGTERM)
 	go signalHandler(c, l)
-    events := make(chan string)
-    go readEventsAndSendToKinesis(events, eventstream, aws_access_key_id, aws_secret_access_key, aws_region)
+        events := make(chan string)
+        go readEventsAndSendToKinesis(events, eventstream, aws_access_key_id, aws_secret_access_key, aws_region)
 
 	for {
 		fd, err := l.Accept()
