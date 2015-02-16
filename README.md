@@ -1,6 +1,14 @@
 # eventingestion_socket
+## Overview
 
 Provides a file descriptor at `SOCKET_PATH` with permissions `SOCKET_MODE` that will allow arbitrary input, split by newlines (`\n`) to be pushed to Kinesis `EVENT_STREAM` in AWS region `AWS_REGION` using credentials available in `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+```
+Application                                       ->  eventingestion_socket
+
+$foo = Socket_Client('unix:///var/run/foobar')        read('unix:///var/run/foobar')
+write($foo,'bar\nbaz')                                kinesis.PutRecords('bar')
+                                                      kinesis.PutRecords('baz')
+```
 
 The goal of this project is, to offload the CPU time needed to HTTP PutRecord into Kinesis away from the application itself and thus not slowing the application down and hiding the concurrent processing behind a simple fast UNIX filesocket.
 
