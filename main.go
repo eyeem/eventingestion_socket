@@ -70,7 +70,7 @@ func main() {
 		println("Listening on " + configuration.SocketPath)
 	}
 	if configuration.SocketMode != 0 {
-		fmt.Printf("Changing socket permissions to " + string(configuration.SocketMode) + "\n")
+		fmt.Printf("Changing socket permissions to " + configuration.SocketModeAsString + "\n")
 		os.Chmod(configuration.SocketPath, os.FileMode(configuration.SocketMode))
 	}
 	c := make(chan os.Signal, 1)

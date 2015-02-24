@@ -1,0 +1,2 @@
+gom 'github.com/cenkalti/backoff', :commit => '9831e1e25c874e0a0601b6dc43641071414eec7a'
+gom 'github.com/sendgridlabs/go-kinesis', :commit => '4488d1429c4e062585c9be1a1e0ce7af19f973d6'

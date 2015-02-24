@@ -12,7 +12,8 @@ write($foo,'bar\nbaz')                                kinesis.PutRecords('bar')
 
 The goal of this project is, to offload the CPU time needed to HTTP PutRecord into Kinesis away from the application itself and thus not slowing the application down and hiding the concurrent processing behind a simple fast UNIX filesocket.
 
-To build and run the project a simple git clone + go get + go build should be sufficient.
+To build and run the project, git clone into your GOPATH like $GOPATH/src/github.com/LarsFronius/eventingestion_socket.
+Dependencies are locked using gom, so go get github.com/mattn/gom and gom install && gom build should build the package.
 
 To run the socket, the following environment variables can be used to configure the socket:
 ```

@@ -15,6 +15,7 @@ type Configuration struct {
 	EventStream        string
 	SocketPath         string
 	SocketMode         uint64
+	SocketModeAsString string
 }
 
 var (
@@ -64,6 +65,7 @@ func getConfigurationFromEnv(exit func()) (conf Configuration) {
 	if err == EnvVariableNotFound {
 		fmt.Printf(err.Error() + "\nSOCKET_MODE is not readable, will leave it readable for $USER\n")
 	} else {
+		conf.SocketModeAsString = permission
 		conf.SocketMode, err = strconv.ParseUint(permission, 0, 32)
 		if err != nil {
 			fmt.Printf(permission + " is not a valid mode")
